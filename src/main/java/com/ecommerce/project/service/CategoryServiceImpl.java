@@ -1,10 +1,14 @@
 package com.ecommerce.project.service;
 
 import com.ecommerce.project.model.Category;
+import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -41,15 +45,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String updateCategory(Long categoryId, Category category) {
+    public Category updateCategory(Long categoryId, Category category) {
 
-        for (Category existingCategory : categories) {
-            if (existingCategory.getCategoryId().equals(categoryId)) {
-                existingCategory.setCategoryName(category.getCategoryName());
-                return "Category updated successfully";
-            }
+        Optional<Category> existingCategoryOptional = categories.stream()
+                .filter(c -> c.getCategoryId().equals(categoryId))
+                .findFirst();
+
+        if (existingCategoryOptional.isPresent()) {
+            Category existingCategory = existingCategoryOptional.get();
+            existingCategory.setCategoryName(category.getCategoryName());
+            return existingCategory;
         }
 
-        return "Category not found";
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "Category not found");
     }
 }
