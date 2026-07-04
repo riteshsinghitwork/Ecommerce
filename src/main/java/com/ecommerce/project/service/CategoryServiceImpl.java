@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private List<Category> categories= new ArrayList<>();
+    private List<Category> categories = new ArrayList<>();
 
     @Override
     public List<Category> getAllCategories() {
@@ -16,26 +16,40 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void createCategory(Category category) {
+    public String createCategory(Category category) {
+
+        for (Category existingCategory : categories) {
+            if (existingCategory.getCategoryId().equals(category.getCategoryId())) {
+                return "Category already exists";
+            }
+        }
         categories.add(category);
+        return "Category added successfully";
     }
 
     @Override
-    public boolean deleteCategory(Long categoryId) {
-        return categories.removeIf(category ->
-                category.getCategoryId().equals(categoryId));
+    public String deleteCategory(Long categoryId) {
+        Category category = categories.stream()
+                .filter(c -> c.getCategoryId().equals(categoryId))
+                .findFirst()
+                .orElse(null);
+        if (category == null) {
+            return "Category not found";
+        }
+        categories.remove(category);
+        return "Category deleted successfully";
     }
 
     @Override
-    public boolean updateCategory(Long categoryId, Category category) {
+    public String updateCategory(Long categoryId, Category category) {
 
         for (Category existingCategory : categories) {
             if (existingCategory.getCategoryId().equals(categoryId)) {
                 existingCategory.setCategoryName(category.getCategoryName());
-                return true;
+                return "Category updated successfully";
             }
         }
 
-        return false;
+        return "Category not found";
     }
 }
