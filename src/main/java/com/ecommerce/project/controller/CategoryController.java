@@ -27,13 +27,14 @@ public class CategoryController {
     @PostMapping("/public/categories")
     public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
 
-        String message = categoryService.createCategory(category);
-
-        if (message.equals("Category added successfully")) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(message);
+        try {
+            categoryService.createCategory(category);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Category added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
@@ -49,15 +50,12 @@ public class CategoryController {
     }
 
     @PutMapping("/public/categories/{categoryId}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long categoryId,
-                                                 @RequestBody Category category) {
+    public ResponseEntity<Category> updateCategory(
+            @PathVariable Long categoryId,
+            @RequestBody Category category) {
 
-        Category message = categoryService.updateCategory(categoryId, category);
+        Category updatedCategory = categoryService.updateCategory(categoryId, category);
 
-        if (message.equals("Category updated successfully")) {
-            return ResponseEntity.ok(message);
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+        return ResponseEntity.ok(updatedCategory);
     }
 }
