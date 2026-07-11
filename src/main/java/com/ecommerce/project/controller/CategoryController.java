@@ -24,6 +24,12 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
+    @GetMapping("/public/categories/{categoryId}")
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId) {
+        Category category = categoryService.getCategoryById(categoryId);
+        return ResponseEntity.ok(category);
+    }
+
     @PostMapping("/public/categories")
     public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
 
@@ -39,13 +45,10 @@ public class CategoryController {
 
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
-
         String message = categoryService.deleteCategory(categoryId);
-
         if (message.equals("Category deleted successfully")) {
             return ResponseEntity.ok(message);
         }
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
 
@@ -53,9 +56,7 @@ public class CategoryController {
     public ResponseEntity<Category> updateCategory(
             @PathVariable Long categoryId,
             @RequestBody Category category) {
-
         Category updatedCategory = categoryService.updateCategory(categoryId, category);
-
         return ResponseEntity.ok(updatedCategory);
     }
 }

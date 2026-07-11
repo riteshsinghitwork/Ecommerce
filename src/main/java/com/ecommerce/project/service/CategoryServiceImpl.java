@@ -1,5 +1,6 @@
 package com.ecommerce.project.service;
 
+import com.ecommerce.project.exception.ResourceNotFoundException;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,17 +38,27 @@ public class CategoryServiceImpl implements CategoryService {
     public String deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+                        new ResourceNotFoundException("Category", "categoryId", categoryId));
         categoryRepository.delete(category);
-        return "Category with categoryId " + categoryId + "deleted successfully";
+        return "Category with categoryId " + categoryId+ " " + "deleted successfully";
     }
 
     @Override
     public Category updateCategory(Long categoryId, Category category) {
-        Optional<Category> savedCategoryOptional = categoryRepository.findById(categoryId);
-        Category savedCategory = savedCategoryOptional.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
-        category.setCategoryId(categoryId);
-        savedCategory = categoryRepository.save(category);
-        return savedCategory;
+
+        Category savedCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category", "categoryId", categoryId));
+
+        // Update only the fields that can change
+        savedCategory.setCategoryName(category.getCategoryName());
+
+        return categoryRepository.save(savedCategory);
+    }
+    @Override
+    public Category getCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category", "categoryId", categoryId));
     }
 }
