@@ -32,24 +32,14 @@ public class CategoryController {
 
     @PostMapping("/public/categories")
     public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
-
-        try {
-            categoryService.createCategory(category);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Category added successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-        }
+       categoryService.createCategory(category);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Category created successfully");
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
-        String message = categoryService.deleteCategory(categoryId);
-        if (message.equals("Category deleted successfully")) {
-            return ResponseEntity.ok(message);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+        String status = categoryService.deleteCategory(categoryId);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(status);
     }
 
     @PutMapping("/public/categories/{categoryId}")
