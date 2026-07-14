@@ -20,15 +20,12 @@ public class CategoryController {
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
-@GetMapping("/echo")
-    public ResponseEntity<String> echoMessage(@RequestParam(name = "message") String message)
-    {
-     return  new ResponseEntity<>("Echo message " + message, HttpStatus.OK);
-    }
 
     @GetMapping("/public/categories")
-    public ResponseEntity<CategoryResponse> getCategories() {
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public ResponseEntity<CategoryResponse> getCategories(@RequestParam(name = "pageNumber", defaultValue = "0") Integer pageNumber,
+                                                          @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        CategoryResponse categoryResponse = categoryService.getAllCategories(pageNumber, pageSize);
+        return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
     @GetMapping("/public/categories/{categoryId}")
