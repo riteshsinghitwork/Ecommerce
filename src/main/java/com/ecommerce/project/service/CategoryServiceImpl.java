@@ -38,28 +38,29 @@ public class CategoryServiceImpl implements CategoryService {
         Category categoryFromdb = categoryRepository.findByCategoryName(category.getCategoryName());
         if(categoryFromdb != null)
             throw new APIException("Category with name " + categoryDTO.getCategoryName() + " already exists and its id is ");
-        categoryRepository.save(category);
         Category savedCategory = categoryRepository.save(category);
         return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Category", "categoryId", categoryId));
         categoryRepository.delete(category);
-        return "Category with categoryId " + categoryId+ " " + "deleted successfully";
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
-    public Category updateCategory(Long categoryId, Category category) {
+    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
         Category savedCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Category", "categoryId", categoryId));
-        // Update only the fields that can change
-        savedCategory.setCategoryName(category.getCategoryName());
-        return categoryRepository.save(savedCategory);
+
+        // Update fields
+        savedCategory.setCategoryName(categoryDTO.getCategoryName());
+        Category updatedCategory = categoryRepository.save(savedCategory);
+        return modelMapper.map(updatedCategory, CategoryDTO.class);
     }
     @Override
     public Category getCategoryById(Long categoryId) {
