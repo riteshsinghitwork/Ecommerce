@@ -114,8 +114,7 @@ public class ProductServiceImpl implements ProductService {
         return modelMapper.map(updateProduct, ProductDTO.class);
     }
 
-    private String uploadImage(String path, MultipartFile file) throws IOException {
-        String originalFileName = file.getName();
+    private String uploadImage(String path, MultipartFile file) throws IOException {String originalFileName = file.getOriginalFilename();
         String randomId = UUID.randomUUID().toString();
         String fileName = randomId.concat(originalFileName.substring(originalFileName.lastIndexOf('.')));
         String filePath = path + File.pathSeparator + fileName;

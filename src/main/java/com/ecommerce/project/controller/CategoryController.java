@@ -62,7 +62,7 @@ public class CategoryController {
         CategoryDTO updatedCategoryDTO = categoryService.updateCategory(categoryId, categoryDTO);
         return new ResponseEntity<>(updatedCategoryDTO, HttpStatus.CREATED);
     }
-    @PutMapping("/products/{productsId}/image")
+    @PutMapping("/products/{productId}/image")
     public ResponseEntity<ProductDTO> updateProductImage(@PathVariable Long productId,
                                                          @RequestParam("image")MultipartFile image) throws IOException {
        ProductDTO updatedProduct = productService.updateProductImage(productId, image);
