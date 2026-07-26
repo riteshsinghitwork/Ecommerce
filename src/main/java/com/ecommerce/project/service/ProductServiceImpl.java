@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
                 new ResourceNotFoundException("Product", "productId", productId));
         Product product = modelMapper.map(productDTO, Product.class);
         productFromDb.setProductName(product.getProductName());
-        productFromDb.setDescription(product.getDescription());
+        productFromDb.setProductDescription(product.getProductDescription());
         productFromDb.setPrice(product.getPrice());
         productFromDb.setDiscount(product.getDiscount());
         double specialPrice = product.getPrice() - ((product.getDiscount() * 0.01) * product.getPrice());
