@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,15 @@ public class MyGlobalExceptionHandler {
     private static final Logger log =
             LoggerFactory.getLogger(MyGlobalExceptionHandler.class);
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<APIResponse> handleNoResourceFoundException(NoResourceFoundException ex) {
+        // This stops the massive stack trace from filling your console
+        String message = "Resource not found: " + ex.getResourcePath();
+        APIResponse apiResponse = new APIResponse(message, false);
+
+        // Returns a proper 404 instead of a 500 error
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
