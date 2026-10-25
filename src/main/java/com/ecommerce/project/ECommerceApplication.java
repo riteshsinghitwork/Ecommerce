@@ -18,7 +18,6 @@ public class ECommerceApplication {
     @Bean
     public CommandLineRunner initData(RoleRepository roleRepository) {
         return args -> {
-            // यह चेक करेगा कि रोल मौजूद है या नहीं
             if (roleRepository.findByRoleName(AppRole.ROLE_USER).isEmpty()) {
                 roleRepository.save(new Role(AppRole.ROLE_USER));
             }
@@ -28,6 +27,6 @@ public class ECommerceApplication {
             if (roleRepository.findByRoleName(AppRole.ROLE_SELLER).isEmpty()) {
                 roleRepository.save(new Role(AppRole.ROLE_SELLER));
             }
-        }; // यहाँ semicolon (;) ज़रूरी है
+        };
     }
 }

@@ -9,6 +9,8 @@ import com.ecommerce.project.repositories.UserRepository;
 import com.ecommerce.project.security.jwt.*;
 import com.ecommerce.project.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,22 +54,24 @@ public class AuthController {
         // 2. Set the authentication in the Security Context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 3. Extract User Details FIRST (because your JwtUtils needs this to generate the token)
+        // 3. Extract User Details
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        // 4. Generate JWT Token using the exact method from your JwtUtils.java
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+        // 4. Generate the JWT Cookie using your JwtUtils
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         // 5. Get user roles
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        // 6. Return response using the exact constructor order from your LoginResponse.java
-        // (username, roles, jwtToken)
-        LoginResponse response = new LoginResponse(userDetails.getUsername(), roles, jwtToken);
+        // 6. Pass the string value of the token into your LoginResponse constructor
+        LoginResponse response = new LoginResponse(userDetails.getUsername(), roles);
 
-        return ResponseEntity.ok(response);
+        // 7. Return the response with the cookie attached to the HTTP header
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(response);
     }
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
