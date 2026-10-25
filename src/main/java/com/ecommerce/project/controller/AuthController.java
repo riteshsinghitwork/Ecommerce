@@ -100,4 +100,40 @@ public class AuthController {
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
+    @GetMapping("/username")
+    public String currentusername(Authentication authentication)
+    {
+        if(authentication !=null)
+        {
+            return authentication.getName();
+        } else {
+            return "No user Logged in";
+        }
+    }
+    @GetMapping("/user")
+    public ResponseEntity<LoginResponse> getUserDetails(Authentication authentication)
+    {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        // 5. Get user roles
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        // 6. Pass the string value of the token into your LoginResponse constructor
+        LoginResponse response = new LoginResponse(userDetails.getUsername(), roles);
+
+        // 7. Return the response with the cookie attached to the HTTP header
+        return ResponseEntity.ok()
+                .body(response);
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> signOutUser()
+    {
+        ResponseCookie cookie = jwtUtils.getCleanCookie();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new MessageResponse("You have been signed out!"));
+    }
 }
